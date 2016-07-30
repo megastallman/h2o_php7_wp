@@ -1,0 +1,17 @@
+---
+  - hosts: shpress
+    become: yes
+    user: root
+    vars:
+        crtfile: "crtfile"
+        keyfile: "keyfile"
+        mysqlass: "F3rf35446v6c55c6cvc6c64"
+        mysqlusr: "shpress"
+        mysqldb: "shpress"
+        wppreffix: "ololo_"
+        wprelease: "https://wordpress.org/latest.tar.gz"
+        dnshostname: "{{ inventory_hostname }}"
+    roles:
+      - mysql
+      - php
+      - h2o

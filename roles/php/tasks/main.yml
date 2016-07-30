@@ -1,0 +1,14 @@
+  - name: Install python-apt
+    apt: name=python-apt
+            
+  - name: Add php7 ppa
+    apt_repository: repo='ppa:ondrej/php'
+
+  - name: Install php7.0
+    apt: name=php7.0
+
+  - name: Install php7.0-mysql
+    apt: name=php7.0-mysql
+
+  - name: Install php7.0-fpm
+    apt: name=php7.0-fpm

@@ -1,0 +1,49 @@
+  - name: Install h2o ppa
+    apt_repository: repo='ppa:h2o-maintainers/stable'
+
+  - name: Install h2o-server
+    apt: name=h2o-server
+
+  - name: h2o config directory
+    file: path=/etc/h2o state=directory
+
+  - name: h2o certificate
+    copy: src=server.crt dest=/etc/h2o/server.crt owner=www-data group=www-data mode=0400
+
+  - name: h2o key
+    copy: src=server.key dest=/etc/h2o/server.key owner=www-data group=www-data mode=0400
+
+  - name: /etc/h2o/shpress.yml
+    template: src=shpress.yml.j2 dest=/etc/h2o/shpress.yml
+
+  - name: h2o www directory
+    file: path=/var/www/h2o state=directory owner=www-data group=www-data
+
+  - name: Download WP
+    get_url: url={{ wprelease }} dest=/var/www/h2o/wordpress.tar.gz owner=www-data group=www-data
+
+  - name: Unpack tarball
+    shell: tar xf wordpress.tar.gz
+    args:
+        chdir: /var/www/h2o
+        creates: /var/www/h2o/wordpress 
+    become_user: www-data
+
+  - name: WP settings file
+    template: src=wp-config.php.j2 dest=/var/www/h2o/wordpress/wp-config.php owner=www-data group=www-data
+
+  - name: h2o log directory
+    file: path=/var/log/h2o state=directory owner=www-data group=www-data
+
+  - name: h2o run directory
+    file: path=/var/run/h2o state=directory owner=www-data group=www-data
+
+  - name: h2o unit file
+    template: src=h2o.service.j2 dest=/etc/systemd/system/h2o.service
+
+  - name: Ugly workaround(disable apache2, being installed as recommends)
+    service: name=apache2 enabled=no state=stopped
+    ignore_errors: yes
+
+  - name: Autostart h2o
+    service: name=h2o enabled=yes state=restarted

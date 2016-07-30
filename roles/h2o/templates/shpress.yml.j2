@@ -1,0 +1,37 @@
+user: www-data
+
+hosts:
+    "{{ dnshostname }}:80":
+        listen:
+            port: 80
+        paths:
+            "/":
+                redirect: https://{{ dnshostname }}/
+    "{{ dnshostname }}:443":
+        listen:
+            host: 0.0.0.0
+            port: 443
+            ssl:
+                certificate-file: /etc/h2o/server.crt
+                key-file: /etc/h2o/server.key
+        paths:
+            "/":
+                file.dir: /var/www/h2o/wordpress
+                file.dirlisting: on
+                redirect:
+                    url: /index.php/
+                    internal: YES
+                    status: 307
+
+file.custom-handler:
+    extension: .php
+    fastcgi.connect:
+        port: /var/run/php/php7.0-fpm.sock
+        type: unix
+
+file.index: [ 'index.php', 'index.html' ]
+
+access-log: /var/log/h2o/access.log
+error-log: /var/log/h2o/error.log
+pid-file: /var/run/h2o/pid
+http2-reprioritize-blocking-assets: ON

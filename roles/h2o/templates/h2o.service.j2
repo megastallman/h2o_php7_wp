@@ -1,0 +1,9 @@
+[Unit]
+Description=h2o
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/h2o -c /etc/h2o/shpress.yml
+
+[Install]
+WantedBy=default.target
